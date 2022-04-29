@@ -29,10 +29,12 @@ dependencies:
   - ipdb
   - ipython
   - jupyterlab
+  - jupyter_contrib_nbextensions
   - lxml
   - matplotlib
   - nbsphinx
   - netCDF4
+  - nodejs
   - numpy
   - openpyxl
   - pandas
@@ -54,3 +56,4 @@ dependencies:
   - zeep
   - pip:
     - angles
+    - lckr-jupyterlab-variableinspector
