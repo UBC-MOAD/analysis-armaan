@@ -40,7 +40,7 @@ def import_HRDPS(year, variable):
             
 def import_CANRCM(year, variable):
     data_name_can = variable[1]
-    p_can = '/ocean/arandhawa/canrcm_' + data_name_can + '_' + str(year) + '.nc'
+    p_can = '/data/sallen/results/CANRCM4/canrcm_' + data_name_can + '_' + str(year) + '.nc'
     ##CANRCM import
     d1 = xr.open_dataset(p_can)
     if year == 2007:
@@ -89,8 +89,8 @@ def import_HRDPS_winds(year):
 def import_CANRCM_winds(year):
     
     ##data paths
-    p_can_u = '/ocean/arandhawa/canrcm_uas_' + str(year) + '.nc'
-    p_can_v = '/ocean/arandhawa/canrcm_vas_' + str(year) + '.nc'
+    p_can_u = '/data/sallen/results/CANRCM4/canrcm_uas_' + str(year) + '.nc'
+    p_can_v = '/data/sallen/results/CANRCM4/canrcm_vas_' + str(year) + '.nc'
     ##importing data
     d1 = xr.open_dataset(p_can_u)
     d2 = xr.open_dataset(p_can_v)
@@ -122,6 +122,9 @@ def weight_CanRCM(can_solar, yr, start_day):
     print (start_day, yr_length, size)
     newweighting = (300000/size-5000*np.cos(np.pi*(np.arange(size)+200)/size*2)/size*2*np.pi 
                     +2000*np.cos(np.pi*(np.arange(size)+200)/size*4)/size*4*np.pi)/100.
+    # only use a fraction of the weighting
+    fraction = 0.75
+    newweighting = 1 + fraction * (newweighting - 1)
     lt, lx, ly = can_solar.shape[0], can_solar.shape[1], can_solar.shape[2]
     return can_solar * (np.broadcast_to(newweighting[(start_day-1)*8:], (ly, lx, lt)).transpose())
 
@@ -378,7 +381,6 @@ def do_wind_reconstruction(target_year, data):
     data += (('v_wind', nspeed * np.sin(nangle)),)
     del nspeed
     del nangle
-    del multiplier
     print("u and v winds done")
              
     return data
@@ -466,7 +468,7 @@ def main(target_year):
     start_day = '01'
     if target_year == '2007':
         start_day = '03'
-    write_the_files(data, 'recon_X', 'PCA vector winds', f'{target_year}-01-{start_day}T01:30', f'{int(target_year)+1}-01-01T01:30')
+    write_the_files(data, 'reconX', 'PCA vector winds', f'{target_year}-01-{start_day}T01:30', f'{int(target_year)+1}-01-01T01:30')
     
     
 if __name__ == "__main__":

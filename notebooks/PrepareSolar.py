@@ -126,7 +126,6 @@ def main_driver(year, stubin, stubout):
     
     startdate = arrow.get(year, 1, 1, 0, 0, 0) # to match hrdps, see below
     enddate = startdate.shift(years=1)
-    enddate = enddate.shift(days=-1)
     deltaday = arrow.get(year, 1, 2, 0, 0, 0) - arrow.get(year, 1, 1, 0, 0, 0)
     time = startdate
     
