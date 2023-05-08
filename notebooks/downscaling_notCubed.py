@@ -45,7 +45,7 @@ def import_CANRCM(year, variable):
     d1 = xr.open_dataset(p_can)
     if year == 2007:
         can = d1[data_name_can][16:,140:165,60:85] ##the first two days are removed to be consistent with 2007 HRDPS
-    elif year == 2008:
+    elif year == int(year/4)*4:
         can = np.concatenate((d1[data_name_can][:472,140:165,60:85], d1[data_name_can][464:472,140:165,60:85], d1[data_name_can][472:,140:165,60:85] ))
     else:
         can = d1[data_name_can][:,140:165,60:85]
@@ -98,7 +98,7 @@ def import_CANRCM_winds(year):
     if year == 2007:
         can_u = d1['uas'][16:,140:165,60:85] ##the first two days are removed to be consistent with 2007 HRDPS
         can_v = d2['vas'][16:,140:165,60:85]
-    elif year == 2008:
+    elif year == int(year/4)*4:
         can_u = np.concatenate((d1['uas'][:472,140:165,60:85], d1['uas'][464:472,140:165,60:85], d1['uas'][472:,140:165,60:85] ))
         can_v = np.concatenate((d2['vas'][:472,140:165,60:85], d2['vas'][464:472,140:165,60:85], d2['vas'][472:,140:165,60:85] ))
         ##repeating feb 28th twice for leap year
@@ -116,7 +116,7 @@ def import_CANRCM_winds(year):
 
 def weight_CanRCM(can_solar, yr, start_day):
     yr_length = 365
-    if yr == 2008:
+    if yr == int(yr/4)*4:
         yr_length = 366
     size = yr_length * 8
     print (start_day, yr_length, size)
@@ -394,7 +394,6 @@ def write_the_files(data, stub, comments, start_date, end_date):
     data_var = {}
     dims = ('time_counter', 'y', 'x')
     times = np.arange(start_date, end_date, np.timedelta64(3, 'h'), dtype='datetime64[ns]')
-
     for i in range(int(times.shape[0]/8.)):
         for j in data:
             data_var[ j[0] ] = (dims, j[1][8*i:8*i + 8], {})
@@ -464,7 +463,13 @@ def main(target_year):
     
     data = ()
     data = do_wind_reconstruction(target_year, data)
+    print ('After wind')
+    for j in data:
+        print ( j[0], j[1].shape)
     data = do_reconstruction(target_year, variables, data)
+    print ('After others')
+    for j in data:
+        print ( j[0], j[1].shape)
     start_day = '01'
     if target_year == '2007':
         start_day = '03'
